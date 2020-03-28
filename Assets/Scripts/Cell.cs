@@ -5,7 +5,7 @@ using TMPro;
 
 public class Cell : MonoBehaviour
 {
-    private ColorChanger color;
+    private EmissiveBehaviour color;
     private AudioSource audio;
     //private TextMeshPro text;
 
@@ -16,7 +16,7 @@ public class Cell : MonoBehaviour
     void Start()
     {
         // set color
-        color = gameObject.AddComponent<ColorChanger>();
+        color = gameObject.AddComponent<EmissiveBehaviour>();
 
         // set audio
         audio = gameObject.AddComponent<AudioSource>();
@@ -26,17 +26,17 @@ public class Cell : MonoBehaviour
 
     public IEnumerator PlayCell(float speed, bool playSound = true, bool stopSoundAtEnd = false)
     {
-        color.ChangeColorToUnsaturated();
+        color.On();
         yield return new WaitForSeconds(0.2f * (1 / speed));
 
-        color.ChangeColorToOriginal();
+        //color.ChangeColorToOriginal();
 
         if (playSound)
             audio.Play();
 
         yield return new WaitForSeconds(1 * (1 / speed));
 
-        color.ChangeColorToUnsaturated();
+        //color.ChangeColorToUnsaturated();
 
         //yield return new WaitForSeconds(0.5f * (1 / speed));
 

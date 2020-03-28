@@ -16,7 +16,7 @@ class SimonSaysController : MonoBehaviour
     public TMPro.TextMeshProUGUI Score;
     public TMPro.TextMeshProUGUI Status;
 
-    public bool PlayAudioOnInput = true;
+
 
     private SimonSays game;
 
@@ -25,6 +25,8 @@ class SimonSaysController : MonoBehaviour
     private bool playing;
 
     private float gameSpeed = 1;
+
+    bool gotInputFromKey = false;
 
     void Start()
     {
@@ -52,14 +54,14 @@ class SimonSaysController : MonoBehaviour
         while (true)
         {
             // get user input
-            int playerInput = GetInputNote();
+            int playerInput = GetInput();
 
             if (playerInput != -1)
             {
                 print(playerInput);
 
                 // play correspondent cell
-                StartCoroutine(Cells[playerInput].PlayCell(1.5f, playSound: PlayAudioOnInput));
+                StartCoroutine(Cells[playerInput].PlayCell(1.5f, playSound: gotInputFromKey));
             }
 
             yield return null;
@@ -140,13 +142,12 @@ class SimonSaysController : MonoBehaviour
             {
                 remainingTime -= Time.deltaTime; // update remaining time
 
-                //int playerInput = GetInputNumber();
-                int playerInput = GetInputNote();
+                int playerInput = GetInput();
 
                 if (playerInput != -1) // if the input is valid
                 {
                     // play correspondent cell
-                    StartCoroutine(Cells[playerInput].PlayCell(1.5f, playSound: PlayAudioOnInput));
+                    StartCoroutine(Cells[playerInput].PlayCell(1.5f, playSound: gotInputFromKey));
 
                     yield return new WaitForSeconds(0.1f);
 
@@ -171,7 +172,21 @@ class SimonSaysController : MonoBehaviour
         }
     }
 
-    int GetInputNumber()
+    int GetInput()
+    {
+        int inputKey = GetInputKey();
+
+        if (inputKey != -1)
+        {
+            gotInputFromKey = true;
+            return inputKey;
+        }
+
+        gotInputFromKey = false;
+        return GetInputNote();
+    }
+
+    int GetInputKey()
     {
         // todo: change to key down with check for repetition
         if (Input.GetKeyUp(KeyCode.Alpha1)) return 0;
