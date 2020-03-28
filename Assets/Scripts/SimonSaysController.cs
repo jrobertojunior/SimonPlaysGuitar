@@ -259,4 +259,9 @@ class SimonSaysController : MonoBehaviour
         PlayerPrefs.SetInt("highestScore", highestScore);
         PlayerPrefs.Save();
     }
+
+    public void SetEarTrainingMode(bool value)
+    {
+        EarTrainingMode = value;
+    }
 }
