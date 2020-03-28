@@ -13,10 +13,10 @@ class SimonSaysController : MonoBehaviour
     public Cell[] Cells; 
     public AudioSource loseSound;
     public float timeToChoose = 2;
-    public TMPro.TextMeshProUGUI Score;
-    public TMPro.TextMeshProUGUI Status;
+    public TMPro.TextMeshProUGUI ScoreText;
+    public TMPro.TextMeshProUGUI HighestScoreText;
 
-
+    private int highestScore = 0;
 
     private SimonSays game;
 
@@ -80,18 +80,22 @@ class SimonSaysController : MonoBehaviour
         {
             yield return new WaitForSeconds(1);
 
-            Score.text = game.Sequence.Count.ToString();
-            Status.text = "computer turn";
-
             game.AddTurn();
             yield return new WaitForSeconds(0.1f);
             yield return StartCoroutine(ComputerTurn());
 
-            Status.text = "your turn";
             yield return StartCoroutine(PlayerTurn());
             
             gameSpeed += 0.1f;
         }
+
+        // player lost
+        int score = game.Sequence.Count - 1;
+        highestScore = score > highestScore ? score : highestScore;
+
+        // update UI
+        ScoreText.text = score.ToString();
+        HighestScoreText.text = highestScore.ToString();
 
         loseSound.Play();
         FreePlay();
@@ -125,8 +129,6 @@ class SimonSaysController : MonoBehaviour
         {
             cell.GetComponent<AudioSource>().Stop();
         }
-
-        //yield return new WaitForSeconds(1);
     }
     
     IEnumerator PlayerTurn()

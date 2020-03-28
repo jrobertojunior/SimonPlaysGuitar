@@ -1202,8 +1202,8 @@ MonoBehaviour:
   - {fileID: 41407703}
   loseSound: {fileID: 970319335}
   timeToChoose: 5
-  Score: {fileID: 0}
-  Status: {fileID: 0}
+  Score: {fileID: 1116725534}
+  Status: {fileID: 2049995012}
 --- !u!4 &970319334
 Transform:
   m_ObjectHideFlags: 0
