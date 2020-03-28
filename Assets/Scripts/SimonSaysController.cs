@@ -20,7 +20,7 @@ class SimonSaysController : MonoBehaviour
 
     public CanvasGroup Ui;
 
-    public bool EarTrainingMode = false;
+    bool EarTrainingMode = false;
 
     private int highestScore = 0;
 
@@ -30,7 +30,7 @@ class SimonSaysController : MonoBehaviour
 
     private bool playing;
 
-    private float gameSpeed = 1;
+    public float GameSpeed = 1.2f;
 
     bool gotInputFromKey = false;
 
@@ -107,7 +107,7 @@ class SimonSaysController : MonoBehaviour
     IEnumerator Game()
     {
         playing = true;
-        gameSpeed = 1;
+        //GameSpeed = 1;
 
         yield return StartCoroutine(PlayInitialAnimation());
 
@@ -122,7 +122,7 @@ class SimonSaysController : MonoBehaviour
 
             yield return StartCoroutine(PlayerTurn());
             
-            gameSpeed += 0.1f;
+            //GameSpeed += 0.1f;
         }
 
         // player lost
@@ -162,12 +162,13 @@ class SimonSaysController : MonoBehaviour
     {
         foreach (int cellNumber in game.Sequence)
         {
-            yield return StartCoroutine(Cells[cellNumber].PlayCell(gameSpeed, fadeOut: EarTrainingMode, appear: !EarTrainingMode));
+            Cells[cellNumber].GetComponent<AudioSource>().volume = 1;
+            yield return StartCoroutine(Cells[cellNumber].PlayCell(GameSpeed, fadeOut: EarTrainingMode, appear: !EarTrainingMode));
         }
 
         foreach (var cell in Cells)
         {
-            cell.GetComponent<AudioSource>().Stop();
+            StartCoroutine(FadeAudio(cell.GetComponent<AudioSource>()));
         }
     }
     
@@ -263,5 +264,15 @@ class SimonSaysController : MonoBehaviour
     public void SetEarTrainingMode(bool value)
     {
         EarTrainingMode = value;
+    }
+
+    IEnumerator FadeAudio(AudioSource audio)
+    {
+        while (audio.volume > 0)
+        {
+            audio.volume = Mathf.Clamp(audio.volume - Time.deltaTime, 0, Mathf.Infinity);
+
+            yield return null;
+        }
     }
 }
