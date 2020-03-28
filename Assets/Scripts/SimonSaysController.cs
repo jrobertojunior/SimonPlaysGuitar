@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 class SimonSaysController : MonoBehaviour
 {
@@ -15,6 +16,10 @@ class SimonSaysController : MonoBehaviour
     public float timeToChoose = 2;
     public TMPro.TextMeshProUGUI ScoreText;
     public TMPro.TextMeshProUGUI HighestScoreText;
+    public GameObject ScoreObject;
+
+    public CanvasGroup Ui;
+
 
     private int highestScore = 0;
 
@@ -30,7 +35,11 @@ class SimonSaysController : MonoBehaviour
 
     void Start()
     {
+        highestScore = PlayerPrefs.GetInt("highestScore");
         pitchDetector = gameObject.AddComponent<PitchDetector>();
+
+        ScoreObject.SetActive(false);
+
         FreePlay();
     }
 
@@ -39,13 +48,39 @@ class SimonSaysController : MonoBehaviour
         game = new SimonSays(Cells.Length);
         StopAllCoroutines();
 
+        StartCoroutine(FadeOutUI());
         StartCoroutine(Game());
+    }
+
+    IEnumerator FadeInUI()
+    {
+        float d = Time.deltaTime;
+
+        while (Ui.alpha < 1)
+        {
+            Ui.alpha = Ui.alpha + d < 1 ? Ui.alpha + d : 1;
+
+            yield return null;
+        }
+    }
+
+    IEnumerator FadeOutUI()
+    {
+        float d = Time.deltaTime;
+
+        while (Ui.alpha > 0)
+        {
+            Ui.alpha = Ui.alpha - d > 0 ? Ui.alpha - d : 0;
+
+            yield return null;
+        }
     }
 
     public void FreePlay()
     {
         StopAllCoroutines();
 
+        StartCoroutine(FadeInUI());
         StartCoroutine(FreePlaying());
     }
 
@@ -98,6 +133,10 @@ class SimonSaysController : MonoBehaviour
         HighestScoreText.text = highestScore.ToString();
 
         loseSound.Play();
+        ScoreObject.SetActive(true);
+
+        yield return new WaitForSeconds(1.5f);
+
         FreePlay();
     }
 
@@ -107,13 +146,13 @@ class SimonSaysController : MonoBehaviour
         Cells[1].GetComponent<AudioSource>().Play();
         //Cells[3].GetComponent<AudioSource>().Play();
 
-        for (int i = 0; i < 3; i++)
-        {
+        //for (int i = 0; i < 1; i++)
+        //{
             foreach (Cell cell in Cells)
             {
-                yield return StartCoroutine(cell.PlayCell(20f, playSound: false));
+                StartCoroutine(cell.PlayCell(20f, playSound: false));
             }
-        }
+        //}
 
         yield return new WaitForSeconds(1f);
     }
@@ -212,5 +251,11 @@ class SimonSaysController : MonoBehaviour
         //if (pitchDetector.NoteWithoutOctave == "A") return 3;
 
         return -1;
+    }
+
+    private void OnDestroy()
+    {
+        PlayerPrefs.SetInt("highestScore", highestScore);
+        PlayerPrefs.Save();
     }
 }
