@@ -40,7 +40,6 @@ public class CellAnimation : MonoBehaviour
             emission -= Time.deltaTime;
             SetEmission(emission);
 
-
             if (fadeOut)
             {
                 alpha -= Time.deltaTime * 1.5f;
@@ -50,6 +49,24 @@ public class CellAnimation : MonoBehaviour
                 {
                     SetAlpha(text, alpha);
                 }
+            }
+
+            yield return null;
+        }
+    }
+
+    public IEnumerator ShowCell()
+    {
+        float alpha = material.color.a;
+        
+        while (alpha < 1)
+        {
+            alpha += Time.deltaTime;
+            SetAlpha(material, alpha);
+
+            if (text != null)
+            {
+                SetAlpha(text, alpha);
             }
 
             yield return null;
@@ -70,7 +87,7 @@ public class CellAnimation : MonoBehaviour
         material.color = new Color(material.color.r, material.color.g, material.color.b, alpha);
     }
 
-    private void SetAlpha(TMPro.TextMeshPro text, float alpha)
+    private void SetAlpha(TextMeshPro text, float alpha)
     {
         alpha = Mathf.Clamp(alpha, 0, 1);
         text.color = new Color(text.color.r, text.color.g, text.color.b, alpha);

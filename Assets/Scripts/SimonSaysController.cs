@@ -87,6 +87,11 @@ class SimonSaysController : MonoBehaviour
 
     IEnumerator FreePlaying()
     {
+        foreach (Cell cell in Cells)
+        {
+            cell.ShowCell();
+        }
+
         while (true)
         {
             // get user input

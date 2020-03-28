@@ -33,4 +33,9 @@ public class Cell : MonoBehaviour
         if (stopSoundAtEnd)
             audio.Stop();
     }
+
+    public void ShowCell()
+    {
+        StartCoroutine(cellAnimation.ShowCell());
+    }
 }
