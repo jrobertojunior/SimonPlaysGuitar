@@ -4,32 +4,37 @@ using UnityEngine;
 
 public class UIController : MonoBehaviour
 {
-    public GameObject InitialViewObject;
-    public GameObject OptionsViewObject;
+    public GameObject InitialView;
+    public GameObject OptionsView;
+    public GameObject AboutView;
 
     public float transitionSpeed = 4f;
 
-    CanvasGroup initialView;
-    CanvasGroup optionsView;
+    CanvasGroup initialViewGroup;
+    CanvasGroup optionsViewGroup;
 
     private GameObject currentObject;
 
     void Start()
     {
-        initialView = InitialViewObject.GetComponent<CanvasGroup>();
-        optionsView = OptionsViewObject.GetComponent<CanvasGroup>();
+        initialViewGroup = InitialView.GetComponent<CanvasGroup>();
+        optionsViewGroup = OptionsView.GetComponent<CanvasGroup>();
 
-        currentObject = InitialViewObject;
+        currentObject = InitialView;
     }
 
     public void ChangeToOptionsView()
     {
-        ChangeView(OptionsViewObject);
+        ChangeView(OptionsView);
     }
 
     public void ChangeToInitialView()
     {
-        ChangeView(InitialViewObject);
+        ChangeView(InitialView);
+    }
+    public void ChangeToAboutView()
+    {
+        ChangeView(AboutView);
     }
 
     private void ChangeView(GameObject next)
