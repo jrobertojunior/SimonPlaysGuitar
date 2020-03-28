@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using Guitar_Tuner;
+using System.Collections;
 
 public class PitchDetectorEvent : UnityEvent<string, float> { }
 
@@ -11,7 +12,10 @@ public class PitchDetector : MonoBehaviour
 {
     public float Frequency;
     public string Note;
-    public float ErrorTolerance = 0.05f;
+    public string NoteWithoutOctave;
+    public float ErrorTolerance = 0.03f;
+
+    public string CurrentNote;
 
     public PitchDetectorEvent OnNewNote = new PitchDetectorEvent();
 
@@ -38,8 +42,7 @@ public class PitchDetector : MonoBehaviour
     byte[] buffer;
     int bytesRead;
 
-
-    public int SelectInputDevice()
+    private int SelectInputDevice()
     {
         int inputDevice = 0;
         bool isValidChoice = false;
@@ -101,36 +104,70 @@ public class PitchDetector : MonoBehaviour
         //// stop recording
         //waveIn.StopRecording();
         //waveIn.Dispose();
+
+        StartCoroutine(UpdateReading());
     }
 
     bool lastFrameHadNote = false;
-    string lastNote;
+    string lastNote = "";
 
-    void Update()
+    [SerializeField]
+    float noteSampleDelta;
+    float fixedTimeSinceLastNote = 0;
+
+    float begin;
+
+    IEnumerator UpdateReading()
     {
-        bytesRead = stream.Read(buffer, 0, buffer.Length);
-
-        Frequency = pitch.Get(buffer);
-        Note = GetNote(Frequency);
-
-        if (Frequency != 0)
+        while (true)
         {
-            // if the same note has been played
-            if (!lastFrameHadNote || Note != lastNote)
+            bytesRead = stream.Read(buffer, 0, buffer.Length);
+            Frequency = pitch.Get(buffer);
+            Tuple<string, string> notes = GetNote(Frequency);
+
+            if (notes != null)
             {
-                OnNewNote?.Invoke(Note, Frequency);
+                Note = notes.Item1;
+                NoteWithoutOctave = notes.Item2;
             }
 
-            lastFrameHadNote = true;
-            lastNote = Note;
-        }
-        else
-        {
-            lastFrameHadNote = false;
+            if (Frequency != 0)
+            {
+                noteSampleDelta = Time.fixedTime - fixedTimeSinceLastNote;
+
+                fixedTimeSinceLastNote = Time.fixedTime;
+
+                // if the same note has been played
+                if (!lastFrameHadNote || Note != lastNote)
+                {
+                    OnNewNote?.Invoke(Note, Frequency);
+                    print("nova nota!!");
+
+                    CurrentNote = NoteWithoutOctave;
+                } else
+                {
+                    CurrentNote = string.Empty;
+                }
+
+                begin = Time.fixedTime;
+                lastFrameHadNote = true;
+                lastNote = Note;
+            }
+            else if (Time.fixedTime - begin > 0.4)
+            {
+                lastFrameHadNote = false;
+                print("falta nota");
+
+                begin = Time.fixedTime;
+                CurrentNote = string.Empty;
+            }
+
+
+            yield return null;
         }
     }
 
-    void WaveIn_DataAvailable(object sender, WaveInEventArgs e)
+    private void WaveIn_DataAvailable(object sender, WaveInEventArgs e)
     {
         if (bufferedWaveProvider != null)
         {
@@ -139,7 +176,7 @@ public class PitchDetector : MonoBehaviour
         }
     }
 
-    public string GetNote(float freq)
+    private Tuple<string, string> GetNote(float freq)
     {
         float baseFreq;
 
@@ -151,7 +188,7 @@ public class PitchDetector : MonoBehaviour
             {
                 if (InRange(freq, baseFreq, ErrorTolerance))
                 {
-                    return note.Key + i;
+                    return new Tuple<string, string>(note.Key + i, note.Key);
                 }
 
                 baseFreq *= 2;
@@ -168,4 +205,55 @@ public class PitchDetector : MonoBehaviour
 
         return false;
     }
+
+    public bool GetNoteInput(string note, bool octaveSensitive = true)
+    {
+        //if (Frequency != 0)
+        //{
+        //    // new note played
+        //    if (!lastFrameHadNote || Note != lastNote)
+        //    {
+        //        if (octaveSensitive)
+        //        {
+        //            if (note == Note)
+        //            {
+        //                return true;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (note == NoteWithoutOctave)
+        //            {
+        //                print("input de nota");
+        //                return true;
+        //            }
+        //        }
+        //    }
+        //}
+
+        //return false;
+
+        return note == CurrentNote;
+    }
+
+    bool isFlatOrSharp(string x) => (x[1] == 'b' || x[1] == '#');
+    private bool NotesAreEqualWithoutOctave(string noteA, string noteB)
+    {
+        if (noteA.Length == noteB.Length)
+        {
+            if (noteA[0] == noteB[0])
+            {
+                // if both are flat or sharp
+                if (isFlatOrSharp(noteA) == isFlatOrSharp(noteB))
+                {
+                    return noteA[1] == noteB[1];
+                }
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
 }
