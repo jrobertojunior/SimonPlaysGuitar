@@ -20,6 +20,7 @@ class SimonSaysController : MonoBehaviour
 
     public CanvasGroup Ui;
 
+    public bool EarTrainingMode = false;
 
     private int highestScore = 0;
 
@@ -113,7 +114,7 @@ class SimonSaysController : MonoBehaviour
         // each loop is a new turn
         while (playing)
         {
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(1.5f);
 
             game.AddTurn();
             yield return new WaitForSeconds(0.1f);
@@ -150,7 +151,7 @@ class SimonSaysController : MonoBehaviour
         //{
             foreach (Cell cell in Cells)
             {
-                StartCoroutine(cell.PlayCell(20f, playSound: false));
+                StartCoroutine(cell.PlayCell(20f, playSound: false, fadeOut: EarTrainingMode));
             }
         //}
 
@@ -161,7 +162,7 @@ class SimonSaysController : MonoBehaviour
     {
         foreach (int cellNumber in game.Sequence)
         {
-            yield return StartCoroutine(Cells[cellNumber].PlayCell(gameSpeed));
+            yield return StartCoroutine(Cells[cellNumber].PlayCell(gameSpeed, fadeOut: EarTrainingMode, appear: !EarTrainingMode));
         }
 
         foreach (var cell in Cells)
@@ -188,7 +189,7 @@ class SimonSaysController : MonoBehaviour
                 if (playerInput != -1) // if the input is valid
                 {
                     // play correspondent cell
-                    StartCoroutine(Cells[playerInput].PlayCell(1.5f, playSound: gotInputFromKey));
+                    StartCoroutine(Cells[playerInput].PlayCell(1.5f, playSound: gotInputFromKey, fadeOut: EarTrainingMode));
 
                     yield return new WaitForSeconds(0.1f);
 

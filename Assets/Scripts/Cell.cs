@@ -5,18 +5,15 @@ using TMPro;
 
 public class Cell : MonoBehaviour
 {
-    private EmissiveBehaviour color;
+    private CellAnimation cellAnimation;
     private AudioSource audio;
-    //private TextMeshPro text;
-
-
     public AudioClip AudioClip;
-    //public float ColorUnsaturation = 0.3f;
+
 
     void Start()
     {
-        // set color
-        color = gameObject.AddComponent<EmissiveBehaviour>();
+        // set animation
+        cellAnimation = gameObject.AddComponent<CellAnimation>();
 
         // set audio
         audio = gameObject.AddComponent<AudioSource>();
@@ -24,24 +21,16 @@ public class Cell : MonoBehaviour
         audio.clip = AudioClip;
     }
 
-    public IEnumerator PlayCell(float speed, bool playSound = true, bool stopSoundAtEnd = false)
+    public IEnumerator PlayCell(float speed, bool playSound = true, bool stopSoundAtEnd = false, bool fadeOut = false, bool appear = true)
     {
-        color.On();
-        yield return new WaitForSeconds(0.2f * (1 / speed));
-
-        //color.ChangeColorToOriginal();
+        cellAnimation.Activate(fadeOut, appear);
 
         if (playSound)
             audio.Play();
 
         yield return new WaitForSeconds(1 * (1 / speed));
 
-        //color.ChangeColorToUnsaturated();
-
-        //yield return new WaitForSeconds(0.5f * (1 / speed));
-
         if (stopSoundAtEnd)
             audio.Stop();
     }
-
 }

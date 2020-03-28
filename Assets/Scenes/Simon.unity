@@ -1218,6 +1218,7 @@ MonoBehaviour:
   HighestScoreText: {fileID: 1758893154}
   ScoreObject: {fileID: 1814607674}
   Ui: {fileID: 43112849}
+  EarTrainingMode: 1
 --- !u!4 &970319334
 Transform:
   m_ObjectHideFlags: 0
