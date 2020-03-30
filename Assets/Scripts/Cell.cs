@@ -26,8 +26,10 @@ public class Cell : MonoBehaviour
         cellAnimation.Activate(fadeOut, appear);
 
         if (playSound)
+        {
+            audio.volume = 1;
             audio.Play();
-
+        }
         yield return new WaitForSeconds(1 * (1 / speed));
 
         if (stopSoundAtEnd)
@@ -36,6 +38,6 @@ public class Cell : MonoBehaviour
 
     public void ShowCell()
     {
-        StartCoroutine(cellAnimation.ShowCell());
+        if (cellAnimation != null) StartCoroutine(cellAnimation.ShowCell());
     }
 }

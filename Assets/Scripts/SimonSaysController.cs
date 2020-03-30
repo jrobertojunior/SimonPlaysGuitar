@@ -11,7 +11,7 @@ using UnityEngine.UI;
 class SimonSaysController : MonoBehaviour
 {
 
-    public Cell[] Cells; 
+    public Cell[] Cells;
     public AudioSource loseSound;
     public float timeToChoose = 2;
     public TMPro.TextMeshProUGUI ScoreText;
@@ -114,6 +114,12 @@ class SimonSaysController : MonoBehaviour
         playing = true;
         //GameSpeed = 1;
 
+        foreach (Cell cell in Cells)
+        {
+            cell.GetComponent<AudioSource>().volume = 1;
+        }
+
+
         yield return StartCoroutine(PlayInitialAnimation());
 
         // each loop is a new turn
@@ -126,7 +132,7 @@ class SimonSaysController : MonoBehaviour
             yield return StartCoroutine(ComputerTurn());
 
             yield return StartCoroutine(PlayerTurn());
-            
+
             //GameSpeed += 0.1f;
         }
 
@@ -154,10 +160,10 @@ class SimonSaysController : MonoBehaviour
 
         //for (int i = 0; i < 1; i++)
         //{
-            foreach (Cell cell in Cells)
-            {
-                StartCoroutine(cell.PlayCell(20f, playSound: false, fadeOut: EarTrainingMode));
-            }
+        foreach (Cell cell in Cells)
+        {
+            StartCoroutine(cell.PlayCell(20f, playSound: false, fadeOut: EarTrainingMode));
+        }
         //}
 
         yield return new WaitForSeconds(1f);
@@ -176,7 +182,7 @@ class SimonSaysController : MonoBehaviour
             StartCoroutine(FadeAudio(cell.GetComponent<AudioSource>()));
         }
     }
-    
+
     IEnumerator PlayerTurn()
     {
         foreach (int currentCell in game.Sequence)
@@ -204,10 +210,10 @@ class SimonSaysController : MonoBehaviour
                     {
                         correctCell = true;
                     }
-                    
-                    break;    
+
+                    break;
                 }
-                
+
                 yield return null; // wait for a new frame
             }
 

@@ -57,19 +57,22 @@ public class CellAnimation : MonoBehaviour
 
     public IEnumerator ShowCell()
     {
-        float alpha = material.color.a;
-        
-        while (alpha < 1)
+        if (material != null)
         {
-            alpha += Time.deltaTime;
-            SetAlpha(material, alpha);
+            float alpha = material.color.a;
 
-            if (text != null)
+            while (alpha < 1)
             {
-                SetAlpha(text, alpha);
-            }
+                alpha += Time.deltaTime;
+                SetAlpha(material, alpha);
 
-            yield return null;
+                if (text != null)
+                {
+                    SetAlpha(text, alpha);
+                }
+
+                yield return null;
+            }
         }
     }
 
