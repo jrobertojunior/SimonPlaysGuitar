@@ -20,6 +20,8 @@ class SimonSaysController : MonoBehaviour
 
     public CanvasGroup Ui;
 
+    public bool neverGetRepeatedNumbers = false;
+
     bool EarTrainingMode = false;
 
     private int highestScore = 0;
@@ -47,6 +49,7 @@ class SimonSaysController : MonoBehaviour
     public void NewGame()
     {
         game = new SimonSays(Cells.Length);
+        game.neverGetRepeatedNumbers = neverGetRepeatedNumbers;
         StopAllCoroutines();
 
         StartCoroutine(FadeOutUI());
